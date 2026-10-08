@@ -226,27 +226,27 @@ requirement disguised as an API detail.
 
 ## Tasks
 
-- [ ] 004-T1 `SolutionPlan`/`SolutionStage`/`SolutionMove`/`MemoBlock` result model (004-R1, 004-R2)
-- [ ] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3)
-- [ ] 004-T3 `Min2PhaseEngine` + facelet-order assertion at init (004-R4)
-- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5)
-- [ ] 004-T5 `StepSolverEngine` over `cube-solver` for cross/XCross/FB/EOLine (004-R6)
-- [ ] 004-T6 `MethodPlanner` interface and registry (004-R7)
-- [ ] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8)
-- [ ] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9)
+- [ ] 004-T1 `SolutionPlan`/`SolutionStage`/`SolutionMove`/`MemoBlock` result model (004-R1, 004-R2) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S8, @004-S17)
+- [ ] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3) (TDD: src/cube/solve/engines/min2phase.test.ts) (BDD: @004-S6)
+- [ ] 004-T3 `Min2PhaseEngine` + facelet-order assertion at init (004-R4) (TDD: src/cube/solve/engines/min2phase.test.ts) (BDD: @004-S1, @004-S2)
+- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5) (TDD: tests/integration/warmup.test.ts) (BDD: @004-S4)
+- [ ] 004-T5 `StepSolverEngine` over `cube-solver` for cross/XCross/FB/EOLine (004-R6) (TDD: src/cube/solve/engines/step-solver.test.ts) (BDD: @004-S15)
+- [ ] 004-T6 `MethodPlanner` interface and registry (004-R7) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
+- [ ] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8) (TDD: src/cube/solve/methods/kociemba.test.ts) (BDD: @004-S1, @004-S2, @004-S5)
+- [ ] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
 - [ ] 004-T9 BLD data layer (004-R10)
-  - [ ] 004-T9.1 `cubies.ts` — cubie/sticker model derived from the 001 facelet indices
-  - [ ] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation
-  - [ ] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection
-  - [ ] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials
-- [ ] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11)
-- [ ] 004-T11 Golden verification enforced in the planner base for every returned plan (004-R12)
-- [ ] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13)
-- [ ] 004-T13 Move post-processing: cancellation/merging, rotation elimination, AUF, per-metric counts (004-R14)
-- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15)
-- [ ] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16)
-- [ ] 004-T16 Resolve open questions R1/R2 (engine package maturity, combined table-build cost) before relying on them
-- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass
+  - [ ] 004-T9.1 `cubies.ts` — cubie/sticker model derived from the 001 facelet indices (TDD: src/cube/solve/bld/cubies.test.ts)
+  - [ ] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation (TDD: src/cube/solve/bld/scheme.test.ts) (BDD: @004-S14)
+  - [ ] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection (TDD: src/cube/solve/bld/cycles.test.ts, src/cube/solve/bld/cycles.property.test.ts) (BDD: @004-S11, @004-S12, @004-S13)
+  - [ ] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials (TDD: src/cube/solve/bld/setup.test.ts) (BDD: @004-S9, @004-S10)
+- [ ] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11) (logical-eval: every target letter in every scheme, for OP corners/edges and M2 edges, machine-verified against a real cube model — zero entries taken on trust)
+- [ ] 004-T11 Golden verification enforced in the planner base for every returned plan (004-R12) (logical-eval: applyMoves(plan.input, allMoves(plan)) equals solved, and every stage's stateBefore/stateAfter chain is internally consistent) (BDD: @004-S8)
+- [ ] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13) (reasoning: signature reviewed so OH re-ranking in ticket 010 requires no interface change)
+- [ ] 004-T13 Move post-processing: cancellation/merging, rotation elimination, AUF, per-metric counts (004-R14) (TDD: src/cube/solve/postprocess.test.ts) (BDD: @004-S16)
+- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15) (BDD: @004-S18)
+- [ ] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S17)
+- [ ] 004-T16 Resolve open questions R1/R2 (engine package maturity, combined table-build cost) before relying on them (reasoning: resolution recorded in Verification notes before implementation depends on either assumption)
+- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
 
 ## BDD acceptance scenarios
 

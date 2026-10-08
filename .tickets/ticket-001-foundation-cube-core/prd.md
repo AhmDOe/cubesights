@@ -40,6 +40,8 @@ rendering, and the test harness all work together.
 - `<CubeView>` React wrapper around cubing.js `TwistyPlayer`, SSR-safe.
 - A minimal `/` shell: render a cube, generate a WCA scramble, apply it, step through it.
 - Design tokens: Tailwind config with the minimal palette/typography the rest of the app uses.
+- **Docker Compose stack** for running and debugging the whole project locally with one command,
+  and for running the E2E suite the same way CI does.
 
 **Out of scope**
 
@@ -100,6 +102,28 @@ rendering, and the test harness all work together.
   360 px width. This page is throwaway UI that 005 replaces; it exists to prove the pipeline.
 - **001-R13** Bundle discipline: the `/` route's initial JS (excluding the lazily-loaded twisty and
   scramble chunks) stays under 150 kB gzipped, asserted by a size check in CI.
+- **001-R14** Docker Compose stack for local development and debugging. Root-level
+  `docker-compose.yml` plus `Dockerfile.dev`, bringing up the whole project with one command and
+  making every service's logs inspectable with one command:
+  - `app` service — Node 20, bind-mounts the repo source (hot reload via `next dev`), named volume
+    for `node_modules` so the host's `npm install` and the container's don't fight, reads config
+    from a committed `.env.example` (actual `.env` stays gitignored), exposes `3000:3000`.
+  - `test` service — the same image, Compose **profile** `test` so it never starts on a bare
+    `docker compose up`, runs `npm run test:e2e` against the `app` service over the Compose
+    network, writes the Playwright HTML report and trace files to a bind-mounted
+    `playwright-report/` so they're inspectable from the host after the container exits.
+  - Logging discipline: both services log to stdout/stderr only (12-factor), Docker's default
+    `json-file` driver, plain (non-JSON-wrapped) text in dev so `docker compose logs -f app` is
+    directly readable — no separate log-viewing tool required. This is the concrete mechanism
+    behind "debugging is easy by evaluating container or application logs": a hung camera-pipeline
+    worker, a failed solver init, or a crashed dev server all show up in `docker compose logs`.
+  - `docker compose up -d app` must result in `http://localhost:3000/` responding within the
+    latency budget below, and `docker compose logs app` must show the Next.js ready line.
+  - `docker compose run --rm test` must run the full Playwright suite headlessly against the
+    containerized app and exit non-zero on any failure.
+  - A smoke-test script (`scripts/check-docker-stack.sh` — or `.ps1` on Windows, both committed)
+    starts the stack, polls `/` for HTTP 200 up to the timeout, prints pass/fail, and tears down —
+    this is what CI and a human run to confirm the stack is healthy without eyeballing logs by hand.
 
 ## Architecture / approach notes
 
@@ -138,46 +162,65 @@ accidentally couple the camera to the solver.
 of it goes through `<CubeView>`, which is the only file allowed to import `cubing/twisty`, and it
 does so via `next/dynamic` with `ssr: false`. ESLint restricts the import path to that file.
 
+**Why Docker Compose now, and why only two services.** The brief calls out debugging via container
+and application logs explicitly, and that has to be true from the first ticket or every ticket
+after it inherits an undebuggable stack. The honest limit: WebGL, camera and Web Bluetooth are
+browser APIs, so Docker cannot usefully host "the cube" — it can only host the Next.js server and
+a browser *driving* it. That is exactly what `test` (Playwright, already configured with the
+fake-camera/fake-bluetooth flags 001-R10 sets up) does, so Compose gives us two real, useful
+services rather than a db/cache/queue cargo-culted in because "stacks have services" — there is no
+database on the POC's critical path (Prisma/NextAuth are deferred per the root `Agents.md`), so no
+db container is added until a ticket actually needs one. `npm run dev` on the host remains the
+fast loop for day-to-day work; Compose is the "it works the same everywhere, and I can read its
+logs" path, and the one CI and a fresh contributor both reach for first.
+
 ## Tasks
 
-- [ ] 001-T1 Scaffold the T3 app (001-R1)
-  - [ ] 001-T1.1 Run `create-t3-app` (Next.js App Router, TS, Tailwind, tRPC, Prisma, NextAuth)
-  - [ ] 001-T1.2 Enable `strict: true` in tsconfig and fix resulting errors
-  - [ ] 001-T1.3 Configure Tailwind design tokens (minimal palette/typography)
+- [ ] 001-T1 Scaffold the T3 app (001-R1) (logical-eval: `npm run build` and `npm run typecheck` exit 0 on a clean clone)
+  - [ ] 001-T1.1 Run `create-t3-app` (Next.js App Router, TS, Tailwind, tRPC, Prisma, NextAuth) (reasoning: directory/tooling matches the Agents.md §2 stack table by inspection)
+  - [ ] 001-T1.2 Enable `strict: true` in tsconfig and fix resulting errors (logical-eval: `npm run typecheck` reports zero errors)
+  - [ ] 001-T1.3 Configure Tailwind design tokens (minimal palette/typography) (reasoning: tokens reviewed against the "clean, minimalistic" brief requirement)
 - [ ] 001-T2 Cube-core domain types (001-R2, 001-R3, 001-R4)
-  - [ ] 001-T2.1 `FaceletString` branded type + solved constant
-  - [ ] 001-T2.2 `ColorFacelets` + `resolveColorFaceletsToFacelets`
-  - [ ] 001-T2.3 `CubeState` value object
+  - [ ] 001-T2.1 `FaceletString` branded type + solved constant (TDD: src/cube/core/facelets.test.ts)
+  - [ ] 001-T2.2 `ColorFacelets` + `resolveColorFaceletsToFacelets` (TDD: src/cube/core/colors.test.ts) (BDD: @001-S7, @001-S8)
+  - [ ] 001-T2.3 `CubeState` value object (TDD: src/cube/core/facelets.test.ts)
 - [ ] 001-T3 Notation types over `cubing/alg` (001-R5)
-  - [ ] 001-T3.1 `Move`/`MoveSequence` types
-  - [ ] 001-T3.2 `parseAlg`/`formatAlg` round-trip helpers
+  - [ ] 001-T3.1 `Move`/`MoveSequence` types (TDD: src/cube/core/notation.test.ts)
+  - [ ] 001-T3.2 `parseAlg`/`formatAlg` round-trip helpers (TDD: src/cube/core/notation.test.ts) (BDD: @001-S11)
 - [ ] 001-T4 `validateFacelets` (001-R6)
-  - [ ] 001-T4.1 Structural checks: length, facelet counts, distinct centres
-  - [ ] 001-T4.2 Edge/corner existence and uniqueness checks
-  - [ ] 001-T4.3 Parity checks: corner orientation, edge orientation, permutation parity
-  - [ ] 001-T4.4 Error codes carry offending facelet indices
+  - [ ] 001-T4.1 Structural checks: length, facelet counts, distinct centres (TDD: src/cube/core/validate.test.ts) (BDD: @001-S6)
+  - [ ] 001-T4.2 Edge/corner existence and uniqueness checks (TDD: src/cube/core/validate.test.ts)
+  - [ ] 001-T4.3 Parity checks: corner orientation, edge orientation, permutation parity (TDD: src/cube/core/validate.test.ts) (BDD: @001-S4, @001-S5)
+  - [ ] 001-T4.4 Error codes carry offending facelet indices (logical-eval: every case in validate.test.ts asserts the reported indices, not just the error code)
 - [ ] 001-T5 Library adapters (001-R7)
-  - [ ] 001-T5.1 `toMin2PhaseFacelets`/`fromMin2PhaseFacelets`
-  - [ ] 001-T5.2 `toKPattern`/`fromKPattern` for `cubing/kpuzzle`
-  - [ ] 001-T5.3 `applyMoves` via `cubing/kpuzzle`
+  - [ ] 001-T5.1 `toMin2PhaseFacelets`/`fromMin2PhaseFacelets` (TDD: src/cube/core/adapters/min2phase.test.ts) (logical-eval: facelet-order identity guard trips if the assumption in 001-R7 ever breaks)
+  - [ ] 001-T5.2 `toKPattern`/`fromKPattern` for `cubing/kpuzzle` (TDD: src/cube/core/adapters/kpuzzle.test.ts) (BDD: @001-S1)
+  - [ ] 001-T5.3 `applyMoves` via `cubing/kpuzzle` (TDD: src/cube/core/apply.test.ts) (BDD: @001-S3)
 - [ ] 001-T6 Scramble generation (001-R8)
-  - [ ] 001-T6.1 Lazy-loaded wrapper over `randomScrambleForEvent("333")`
-  - [ ] 001-T6.2 `scrambledState()` helper
+  - [ ] 001-T6.1 Lazy-loaded wrapper over `randomScrambleForEvent("333")` (TDD: src/cube/core/scramble.test.ts) (BDD: @001-S2)
+  - [ ] 001-T6.2 `scrambledState()` helper (TDD: src/cube/core/scramble.test.ts)
 - [ ] 001-T7 `<CubeView>` component (001-R9)
-  - [ ] 001-T7.1 Dynamic import of `TwistyPlayer` with `ssr: false`
-  - [ ] 001-T7.2 Prop wiring: state/alg/moveIndex/highlight/stickering/interactive/onMove
-  - [ ] 001-T7.3 Imperative handle: play/pause/jumpTo
+  - [ ] 001-T7.1 Dynamic import of `TwistyPlayer` with `ssr: false` (BDD: @001-S10) (TDD: src/components/CubeView.test.tsx)
+  - [ ] 001-T7.2 Prop wiring: state/alg/moveIndex/highlight/stickering/interactive/onMove (TDD: src/components/CubeView.test.tsx)
+  - [ ] 001-T7.3 Imperative handle: play/pause/jumpTo (TDD: src/components/CubeView.test.tsx) (BDD: @001-S9)
 - [ ] 001-T8 Testing harness (001-R10, 001-R11)
-  - [ ] 001-T8.1 Vitest config with `node` and `jsdom` projects
-  - [ ] 001-T8.2 Playwright config with fake-camera/fake-bluetooth Chromium project
-  - [ ] 001-T8.3 npm scripts: test, test:unit, test:e2e, test:perf, test:coverage, typecheck, lint
-  - [ ] 001-T8.4 `scripts/check-scenarios.mjs` CI grep for `@nnn-Sn` ids
+  - [ ] 001-T8.1 Vitest config with `node` and `jsdom` projects (reasoning: every other task's TDD tag only holds if this config actually runs them — verified transitively by the full suite passing)
+  - [ ] 001-T8.2 Playwright config with fake-camera/fake-bluetooth Chromium project (BDD: @001-S12) (reasoning: flag choice is what lets tickets 002/003 write hardware-free E2E tests)
+  - [ ] 001-T8.3 npm scripts: test, test:unit, test:e2e, test:perf, test:coverage, typecheck, lint (logical-eval: each script exits 0 on a clean tree)
+  - [ ] 001-T8.4 `scripts/check-scenarios.mjs` CI grep for `@nnn-Sn` ids (logical-eval: a PRD scenario id with no matching test name makes the script exit non-zero — self-tested with one deliberately orphaned fixture id)
 - [ ] 001-T9 Minimal shell page (001-R12)
-  - [ ] 001-T9.1 `/` page: CubeView + Scramble + prev/next + alg text
-  - [ ] 001-T9.2 Mobile layout at 360px, keyboard accessibility
-- [ ] 001-T10 Bundle discipline: CI size assertion for `/` initial JS ≤ 150 kB gzip (001-R13)
-- [ ] 001-T11 Write every test in the TDD plan and make it pass
-- [ ] 001-T12 Measure and record the non-functional numbers in Verification notes
+  - [ ] 001-T9.1 `/` page: CubeView + Scramble + prev/next + alg text (TDD: src/app/page.test.tsx) (BDD: @001-S2, @001-S9)
+  - [ ] 001-T9.2 Mobile layout at 360px, keyboard accessibility (BDD: @001-S12)
+- [ ] 001-T10 Bundle discipline: CI size assertion for `/` initial JS ≤ 150 kB gzip (001-R13) (logical-eval: `next build` output size check fails the build above the ceiling)
+- [ ] 001-T11 Docker Compose dev stack (001-R14)
+  - [ ] 001-T11.1 `Dockerfile.dev` (Node 20, installs deps, runs `next dev`) (logical-eval: `docker build` succeeds and the image starts `next dev` on container run)
+  - [ ] 001-T11.2 `docker-compose.yml`: `app` service + `test` service behind a Compose profile, shared `node_modules` volume (BDD: @001-S13, @001-S14)
+  - [ ] 001-T11.3 `.env.example` + env wiring (reasoning: reviewed against every `process.env.*` read in the app for completeness)
+  - [ ] 001-T11.4 stdout/stderr-only logging, default `json-file` driver, plain text in dev (BDD: @001-S13)
+  - [ ] 001-T11.5 `scripts/check-docker-stack.sh`/`.ps1` smoke test (logical-eval: exits 0 when `/` returns HTTP 200 within the timeout, non-zero otherwise)
+  - [ ] 001-T11.6 Document the Compose workflow in README/Agents.md (reasoning: doc reviewed line-by-line against the actual compose file for drift)
+- [ ] 001-T12 Write every test in the TDD plan and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [ ] 001-T13 Measure and record the non-functional numbers in Verification notes (reasoning: each number below is measured on this machine/CI and transcribed, not estimated)
 
 ## BDD acceptance scenarios
 
@@ -254,6 +297,20 @@ Feature: 001 Cube core domain model and shell
     Then no horizontal scrolling occurs
     And all controls are reachable by Tab and operable by Enter or Space
     And an axe accessibility scan reports no serious or critical violations
+
+  Scenario: @001-S13 Docker Compose serves the app with inspectable logs
+    Given a clean clone with Docker installed and no containers running
+    When "docker compose up -d app" is run
+    Then "http://localhost:3000/" responds with HTTP 200 within 60 seconds
+    And "docker compose logs app" contains the Next.js ready line
+    And "docker compose logs app" contains no log line wrapped in extra JSON framing
+
+  Scenario: @001-S14 The E2E suite runs against the containerized app
+    Given the app service is healthy under Docker Compose
+    When "docker compose run --rm test" is executed
+    Then the Playwright suite runs headlessly against the containerized app
+    And the command exits non-zero if any test fails
+    And the Playwright HTML report is present on the host under playwright-report/ after the run
 ```
 
 ## TDD plan
@@ -291,6 +348,12 @@ Write these before implementation; each must fail for the right reason first.
 
 @001-S2, @001-S9, @001-S10, @001-S12 — real browser, real `twisty-player`, real WebGL.
 
+**Infra (`scripts/check-docker-stack.sh`, driven from `tests/e2e/001-docker.spec.ts` or run directly
+in CI as a separate job)** — @001-S13, @001-S14: brings the `app` service up, polls `/` for HTTP 200,
+inspects `docker compose logs app` for the ready line and the absence of JSON-wrapped lines, then
+runs `docker compose run --rm test` and asserts its exit code and the presence of the host-side
+Playwright report.
+
 **Fixtures (`tests/fixtures/states.ts`)** — `SOLVED`, `SUPERFLIP`, `CHECKERBOARD`,
 `ONE_FLIPPED_EDGE`, `ONE_TWISTED_CORNER`, `TWO_SWAPPED_CORNERS`, `WRONG_COUNTS`,
 `DUPLICATE_CENTRES`, plus `SCRAMBLES_50` (a frozen list, so tests are deterministic).
@@ -305,16 +368,22 @@ Write these before implementation; each must fail for the right reason first.
 | First render of `<CubeView>` after hydration | ≤ 400 ms on a mid-tier Android profile | Playwright trace with CPU throttling ×4. |
 | Coverage in `src/cube/core` | ≥ 90% lines | `@vitest/coverage-v8` gate. |
 | Offline | `/` renders and scrambles with the network blocked after first load | Playwright with `context.setOffline(true)`. |
+| `docker compose up -d app` → `/` returns HTTP 200 | ≤ 60 s cold (no image cache), ≤ 15 s warm | `scripts/check-docker-stack.sh`, timed. |
+| `docker compose run --rm test` full suite | completes and reports exit code | Same script; exit code asserted. |
 
 ## Acceptance criteria
 
 1. `npm run typecheck`, `lint`, `test:unit`, `test:e2e`, `test:coverage` all pass from a clean clone.
-2. All twelve BDD scenarios have passing tests with matching `@001-Sn` names; `check-scenarios.mjs`
+2. All fourteen BDD scenarios have passing tests with matching `@001-Sn` names; `check-scenarios.mjs`
    passes.
 3. `src/cube/core` has zero imports from React/Next/DOM/sibling cube modules, enforced by lint.
 4. `cubing/twisty` is imported in exactly one file (`CubeView.tsx`), enforced by lint.
 5. The shell page scrambles and steps a cube in a real browser at 360 px width.
 6. Every non-functional number above is measured and recorded in *Verification notes*.
+7. `docker compose up -d app` serves `/` with HTTP 200 and `docker compose logs app` shows readable,
+   unwrapped log lines including the Next.js ready line.
+8. `docker compose run --rm test` runs the full Playwright suite against the containerized app and
+   leaves a Playwright HTML report on the host.
 
 ## Open questions / risks
 

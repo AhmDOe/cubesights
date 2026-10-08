@@ -86,7 +86,8 @@ Every section is mandatory. "N/A" with a one-line reason is acceptable; omission
    libraries **with links, versions and licences**, and the rationale for choosing them over the
    alternatives that were considered. Record rejected options and why.
 8. **Tasks** — the implementation checklist: every unit of work as a nested markdown checkbox,
-   traceable back to the *Detailed requirements* IDs. See §3.1 for syntax. This is what
+   traceable back to the *Detailed requirements* IDs, with an acceptance-test tag on every line.
+   See §3.1 for checkbox syntax and §3.2 for the tag convention. This is what
    `scripts/select-next-task.mjs` (§6) reads, and what an implementer checks off while working.
 9. **BDD acceptance scenarios** — Gherkin-style `Feature` / `Scenario` / `Given` / `When` / `Then`.
    Cover the happy path, each meaningful sub-feature, and realistic edge cases (permission denied,
@@ -139,6 +140,34 @@ Syntax rules:
   id is the usual shape, with subtasks for any requirement that genuinely has sequential parts.
   Don't restate the TDD plan as tasks; "write the tests in the TDD plan and make them pass" is
   itself one task.
+
+### 3.2 Acceptance-test tags on every task
+
+Every task and subtask line — leaf or parent, no exceptions — ends with a tag naming the check
+that proves it done. A task without one is not plannable; `check-scenarios.mjs` (§4.2) treats a
+missing tag the same as an orphaned BDD scenario id. Four tag kinds cover every task in this
+project:
+
+| Tag | Use when | Form |
+| --- | --- | --- |
+| `TDD` | The task is pure logic with a deterministic input/output (a function, a type, a reducer). | `(TDD: path/to/file.test.ts)` — the file from the ticket's TDD plan that exercises it. |
+| `BDD` | The task is user-/system-observable behaviour (a UI flow, a connection lifecycle, an end-to-end path). | `(BDD: @nnn-Sn)` — the scenario id from the ticket's BDD section, or a comma-separated list if more than one applies. |
+| `logical-eval` | The task is an invariant, property, or data-correctness claim that a single example doesn't prove — a property-based test, an exhaustive table check, a verification pass over generated output. | `(logical-eval: <one-line statement of the invariant checked>)`, naming the test file if one exists (e.g. the BLD table-verification test, the golden-invariant check). |
+| `reasoning` | The task has no executable check at all — a library/version decision, a licence read, a config choice, a manual judgement call. | `(reasoning: <one-line statement of what was verified by inspection and by whom — Opus or a human>)`. Use sparingly; prefer one of the other three whenever a task can be made checkable. |
+
+Rules:
+
+- A **leaf** task's tag is the thing that actually gets run (a real test file, a real scenario id).
+- A **parent** task's tag may be a `logical-eval` or `reasoning` summarizing how its children's
+  checks together prove it (e.g. "all five child tasks' tests pass and the stage-consistency
+  invariant holds across them") — or, more simply, parents may omit a tag when every child already
+  carries one, since the parent's completion rule in §3.1 (`[x]` only when all children are `[x]`)
+  already makes it derived rather than independently checkable.
+- Prefer `TDD`/`BDD` over `logical-eval`, and all three over `reasoning` — `reasoning` is the tag of
+  last resort for things that are genuinely not executable, not a shortcut around writing a test.
+- When a task's check doesn't exist yet (the PRD names the test file but it hasn't been written),
+  tag it anyway — the tag is a commitment, and TDD discipline means the test is written (and seen
+  to fail) before the implementation that satisfies it.
 
 ## 4. Testing stack (standardised across all tickets)
 

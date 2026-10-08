@@ -182,27 +182,27 @@ stuck.
 ## Tasks
 
 - [ ] 003-T1 Camera capture (003-R1)
-  - [ ] 003-T1.1 getUserMedia with rear-camera/720p/30fps constraints, ideal-constraint degradation
-  - [ ] 003-T1.2 Distinct handling of NotAllowedError/NotFoundError/NotReadableError/OverconstrainedError
-  - [ ] 003-T1.3 Stop tracks on unmount/tab-hide; restart on return
-- [ ] 003-T2 Frame pump: rVFC/rAF-driven, latest-frame-wins, zero-copy `ImageBitmap` transfer (003-R2)
-- [ ] 003-T3 ROI geometry: centred 3x3 grid, central-40% sample regions per cell (003-R3)
-- [ ] 003-T4 GPU downscale (1280x720 → 96x96) and median RGB/LAB/HSV sampling (003-R4)
-- [ ] 003-T5 Classification: CIELAB + ΔE2000 nearest-centroid, red/orange hue tiebreak, margin/uncertain flag (003-R5)
-- [ ] 003-T6 Temporal stability gate: 8-frame ring buffer, 5-frame auto-commit (003-R6)
-- [ ] 003-T7 Guided 6-face capture flow in U R F D L B order with re-capture affordance (003-R7)
-- [ ] 003-T8 Palette calibration from the six centre stickers + k-means refinement + persistence (003-R8)
-- [ ] 003-T9 Illumination adaptation: grey-world normalisation, glare/darkness gates (003-R9)
+  - [ ] 003-T1.1 getUserMedia with rear-camera/720p/30fps constraints, ideal-constraint degradation (TDD: src/app/scan/page.test.tsx) (BDD: @003-S1)
+  - [ ] 003-T1.2 Distinct handling of NotAllowedError/NotFoundError/NotReadableError/OverconstrainedError (TDD: src/app/scan/page.test.tsx) (BDD: @003-S11, @003-S12)
+  - [ ] 003-T1.3 Stop tracks on unmount/tab-hide; restart on return (BDD: @003-S17)
+- [ ] 003-T2 Frame pump: rVFC/rAF-driven, latest-frame-wins, zero-copy `ImageBitmap` transfer (003-R2) (BDD: @003-S14) (logical-eval: dropped-frame counter never exceeds one in-flight frame in the perf spec)
+- [ ] 003-T3 ROI geometry: centred 3x3 grid, central-40% sample regions per cell (003-R3) (TDD: src/cube/input/camera/geometry.test.ts)
+- [ ] 003-T4 GPU downscale (1280x720 → 96x96) and median RGB/LAB/HSV sampling (003-R4) (TDD: src/cube/input/camera/sampling.test.ts)
+- [ ] 003-T5 Classification: CIELAB + ΔE2000 nearest-centroid, red/orange hue tiebreak, margin/uncertain flag (003-R5) (TDD: src/cube/input/camera/classify.test.ts, src/cube/input/camera/classify.property.test.ts) (BDD: @003-S7, @003-S8)
+- [ ] 003-T6 Temporal stability gate: 8-frame ring buffer, 5-frame auto-commit (003-R6) (TDD: src/cube/input/camera/stability.test.ts) (BDD: @003-S2, @003-S3)
+- [ ] 003-T7 Guided 6-face capture flow in U R F D L B order with re-capture affordance (003-R7) (TDD: src/components/ScanOverlay.test.tsx) (BDD: @003-S13)
+- [ ] 003-T8 Palette calibration from the six centre stickers + k-means refinement + persistence (003-R8) (TDD: src/cube/input/camera/calibrate.test.ts) (BDD: @003-S9)
+- [ ] 003-T9 Illumination adaptation: grey-world normalisation, glare/darkness gates (003-R9) (TDD: src/cube/input/camera/illumination.test.ts) (BDD: @003-S10)
 - [ ] 003-T10 Assembly, validation and correction mode (003-R10, 003-R11)
-  - [ ] 003-T10.1 Build `ColorFacelets`, resolve to `FaceletString`, validate
-  - [ ] 003-T10.2 Flat 2D net with precisely highlighted offending facelets and plain-language errors
-  - [ ] 003-T10.3 Tap-to-cycle correction with live re-validation
-  - [ ] 003-T10.4 Low-confidence sticker flagging (margin < 10)
-- [ ] 003-T11 Deterministic `classifyFrame` test seam, isolated from camera/worker/RAF shells (003-R13)
-- [ ] 003-T12 Dev instrumentation overlay: per-stage timings, FPS, drops, ΔE/margin (003-R14)
-- [ ] 003-T13 Fixture corpus (≥ 60 labelled frames) and synthetic lighting generator (003-R15)
-- [ ] 003-T14 Write every test in the TDD plan (unit/component/integration/E2E/perf) and make it pass
-- [ ] 003-T15 Manual sign-off on iOS Safari and Android Chrome; record in Verification notes
+  - [ ] 003-T10.1 Build `ColorFacelets`, resolve to `FaceletString`, validate (TDD: src/cube/input/camera/assemble.test.ts) (BDD: @003-S4)
+  - [ ] 003-T10.2 Flat 2D net with precisely highlighted offending facelets and plain-language errors (TDD: src/components/CorrectionNet.test.tsx) (BDD: @003-S5)
+  - [ ] 003-T10.3 Tap-to-cycle correction with live re-validation (TDD: src/components/CorrectionNet.test.tsx) (BDD: @003-S6)
+  - [ ] 003-T10.4 Low-confidence sticker flagging (margin < 10) (TDD: src/components/CorrectionNet.test.tsx) (BDD: @003-S7)
+- [ ] 003-T11 Deterministic `classifyFrame` test seam, isolated from camera/worker/RAF shells (003-R13) (logical-eval: every unit test in src/cube/input/camera/ drives classifyFrame directly with no DOM/camera/worker involved)
+- [ ] 003-T12 Dev instrumentation overlay: per-stage timings, FPS, drops, ΔE/margin (003-R14) (reasoning: inspected manually alongside the perf spec run; it displays measurements, it does not compute them)
+- [ ] 003-T13 Fixture corpus (≥ 60 labelled frames) and synthetic lighting generator (003-R15) (logical-eval: tests/integration/scan-corpus.test.ts reports accuracy at or above every 003-R12 threshold across all lighting conditions)
+- [ ] 003-T14 Write every test in the TDD plan (unit/component/integration/E2E/perf) and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [ ] 003-T15 Manual sign-off on iOS Safari and Android Chrome; record in Verification notes (reasoning: a real six-face scan completed on both platforms by a human, timings and outcomes transcribed)
 
 ## BDD acceptance scenarios
 

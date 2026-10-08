@@ -163,33 +163,33 @@ hierarchy does the work: the active move is the largest text on the page.
 
 ## Tasks
 
-- [ ] 005-T1 `/solve` route and state-source priority: BLE → camera → `?s=` → scramble (005-R1)
-- [ ] 005-T2 Method picker over the 004 registry, URL + localStorage persistence (005-R2)
+- [ ] 005-T1 `/solve` route and state-source priority: BLE → camera → `?s=` → scramble (005-R1) (TDD: src/app/solve/page.test.tsx) (BDD: @005-S1, @005-S2)
+- [ ] 005-T2 Method picker over the 004 registry, URL + localStorage persistence (005-R2) (TDD: src/components/solve/MethodPicker.test.tsx) (BDD: @005-S15)
 - [ ] 005-T3 `<StageList>` recursive stage/substep renderer (005-R3)
-  - [ ] 005-T3.1 Stage header: label, move count, algName/caseId, collapse toggle
-  - [ ] 005-T3.2 Move tokens with annotation qualifiers
-  - [ ] 005-T3.3 Flat rendering with no stage chrome for single-stage plans
-- [ ] 005-T4 Current-move emphasis and lookahead styling (005-R4)
-- [ ] 005-T5 Playback controls: prev/next/play/pause/tempo/reset/jump-to-stage (005-R5)
-- [ ] 005-T6 `<CubeView>` sync via imperative handle; stage-boundary jumps use stored `stateBefore` (005-R6)
-- [ ] 005-T7 Hint facelets toggle, persisted (005-R7)
+  - [ ] 005-T3.1 Stage header: label, move count, algName/caseId, collapse toggle (TDD: src/components/solve/StageList.test.tsx) (BDD: @005-S9)
+  - [ ] 005-T3.2 Move tokens with annotation qualifiers (TDD: src/components/solve/MoveToken.test.tsx)
+  - [ ] 005-T3.3 Flat rendering with no stage chrome for single-stage plans (TDD: src/components/solve/StageList.test.tsx) (BDD: @005-S8)
+- [ ] 005-T4 Current-move emphasis and lookahead styling (005-R4) (TDD: src/components/solve/MoveToken.test.tsx) (BDD: @005-S4)
+- [ ] 005-T5 Playback controls: prev/next/play/pause/tempo/reset/jump-to-stage (005-R5) (TDD: src/components/solve/PlaybackControls.test.tsx) (BDD: @005-S5)
+- [ ] 005-T6 `<CubeView>` sync via imperative handle; stage-boundary jumps use stored `stateBefore` (005-R6) (TDD: src/cube/solve/playback/pointer.test.ts) (BDD: @005-S3, @005-S12)
+- [ ] 005-T7 Hint facelets toggle, persisted (005-R7) (TDD: src/components/solve/PlaybackControls.test.tsx) (BDD: @005-S20)
 - [ ] 005-T8 Live mode (005-R8, 005-R9)
-  - [ ] 005-T8.1 Pointer advance on matching real turns
-  - [ ] 005-T8.2 Divergence detection by state comparison, not move labels
-  - [ ] 005-T8.3 "Undo" and "re-solve from here" recoveries, with prior search cancellation
-  - [ ] 005-T8.4 Whole-cube rotations excluded from divergence
-- [ ] 005-T9 `<MemoPanel>` BLD rendering incl. memo-only view (005-R10)
-- [ ] 005-T10 Honest `NotImplementedError` rendering naming the method and owning ticket (005-R11)
-- [ ] 005-T11 Solving state machine idle/planning/ready/error with the 150 ms no-flash threshold (005-R12)
-- [ ] 005-T12 Keyboard shortcuts: arrows, space, H, R (005-R13)
-- [ ] 005-T13 Accessibility: labelled move list, polite live region, focus visibility, axe-clean (005-R14)
-- [ ] 005-T14 Reduced-motion support (005-R15)
-- [ ] 005-T15 Mobile above-the-fold layout at 360x640 (005-R16)
-- [ ] 005-T16 Deep link encode/decode (`?s=`&`?m=`) and share action (005-R17)
-- [ ] 005-T17 Reserved panel space so plan arrival causes no layout shift (005-R18)
-- [ ] 005-T18 Author the six future-method fixture plans (kociemba/cfop/roux/zz/zb/bld-shaped)
-- [ ] 005-T19 Write every test in the TDD plan (component/unit/integration/E2E/perf) and make it pass
-- [ ] 005-T20 Record both end-to-end POC demonstrations (camera→solved, smart-cube→solved) in Verification notes
+  - [ ] 005-T8.1 Pointer advance on matching real turns (TDD: src/cube/solve/playback/live.test.ts) (BDD: @005-S16)
+  - [ ] 005-T8.2 Divergence detection by state comparison, not move labels (TDD: src/cube/solve/playback/live.test.ts) (BDD: @005-S17)
+  - [ ] 005-T8.3 "Undo" and "re-solve from here" recoveries, with prior search cancellation (TDD: src/cube/solve/playback/live.test.ts) (BDD: @005-S17)
+  - [ ] 005-T8.4 Whole-cube rotations excluded from divergence (TDD: src/cube/solve/playback/live.test.ts) (BDD: @005-S18)
+- [ ] 005-T9 `<MemoPanel>` BLD rendering incl. memo-only view (005-R10) (TDD: src/components/solve/MemoPanel.test.tsx) (BDD: @005-S13, @005-S14)
+- [ ] 005-T10 Honest `NotImplementedError` rendering naming the method and owning ticket (005-R11) (TDD: src/components/solve/SolutionPanel.test.tsx) (BDD: @005-S15)
+- [ ] 005-T11 Solving state machine idle/planning/ready/error with the 150 ms no-flash threshold (005-R12) (TDD: src/components/solve/SolutionPanel.test.tsx) (BDD: @005-S1, @005-S7)
+- [ ] 005-T12 Keyboard shortcuts: arrows, space, H, R (005-R13) (TDD: src/components/solve/PlaybackControls.test.tsx) (BDD: @005-S20)
+- [ ] 005-T13 Accessibility: labelled move list, polite live region, focus visibility, axe-clean (005-R14) (BDD: @005-S21) (reasoning: axe scan reports zero serious/critical violations, reviewed per release)
+- [ ] 005-T14 Reduced-motion support (005-R15) (BDD: @005-S22)
+- [ ] 005-T15 Mobile above-the-fold layout at 360x640 (005-R16) (TDD: src/components/solve/SolutionPanel.test.tsx) (BDD: @005-S23)
+- [ ] 005-T16 Deep link encode/decode (`?s=`&`?m=`) and share action (005-R17) (TDD: src/app/solve/page.test.tsx) (BDD: @005-S19)
+- [ ] 005-T17 Reserved panel space so plan arrival causes no layout shift (005-R18) (TDD: src/components/solve/SolutionPanel.test.tsx) (BDD: @005-S23)
+- [ ] 005-T18 Author the six future-method fixture plans (kociemba/cfop/roux/zz/zb/bld-shaped) (logical-eval: `<StageList>` and `<MemoPanel>` render every fixture shape correctly with no component changes needed per shape — @005-S9, @005-S10, @005-S11, @005-S13)
+- [ ] 005-T19 Write every test in the TDD plan (component/unit/integration/E2E/perf) and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [ ] 005-T20 Record both end-to-end POC demonstrations (camera→solved, smart-cube→solved) in Verification notes (reasoning: both demonstrated manually and timings transcribed, not estimated)
 
 ## BDD acceptance scenarios
 

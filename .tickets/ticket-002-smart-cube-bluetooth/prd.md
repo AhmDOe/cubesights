@@ -165,27 +165,27 @@ rule and @002-S11 exist to catch it.
 
 ## Tasks
 
-- [ ] 002-T1 `CubeDriver` interface and capability types (002-R1)
+- [ ] 002-T1 `CubeDriver` interface and capability types (002-R1) (logical-eval: `SmartCubeWebBluetoothDriver`, `CubingBluetoothDriver` and `ReplayDriver` all type-check against this interface with no widening)
 - [ ] 002-T2 `SmartCubeWebBluetoothDriver` (002-R2)
-  - [ ] 002-T2.1 Map FACELETS/MOVE/GYRO/BATTERY RxJS events to callback-based `CubeDriver` methods
-  - [ ] 002-T2.2 Convert vendor facelets to canonical URFDLB and validate before accepting
+  - [ ] 002-T2.1 Map FACELETS/MOVE/GYRO/BATTERY RxJS events to callback-based `CubeDriver` methods (BDD: @002-S2, @002-S13) (TDD: tests/integration/bluetooth-replay.test.ts)
+  - [ ] 002-T2.2 Convert vendor facelets to canonical URFDLB and validate before accepting (TDD: src/cube/input/bluetooth/facelet-mapping.test.ts)
 - [ ] 002-T3 `CubingBluetoothDriver` (002-R3)
-  - [ ] 002-T3.1 Wire `connectSmartPuzzle`, `addAlgLeafListener`, `addOrientationListener`
-  - [ ] 002-T3.2 Report `capabilities.moves = false` for devices with no move stream (e.g. MoYu here)
-- [ ] 002-T4 Driver registry: primary→secondary fallback, typed error union, query-param override (002-R4)
-- [ ] 002-T5 `CubeStateTracker`: pure seed-then-apply state machine (002-R5)
-- [ ] 002-T6 Drift detection and recovery via facelet re-read (002-R6)
-- [ ] 002-T7 Out-of-order / duplicate move handling within the reorder window (002-R7)
-- [ ] 002-T8 Reconnect with backoff, state preserved across the gap (002-R8)
+  - [ ] 002-T3.1 Wire `connectSmartPuzzle`, `addAlgLeafListener`, `addOrientationListener` (reasoning: verified against `cubing/bluetooth`'s documented API surface; HEYKUBE/older-GAN paths it covers have no fixture hardware for automated testing)
+  - [ ] 002-T3.2 Report `capabilities.moves = false` for devices with no move stream (e.g. MoYu here) (TDD: src/cube/input/bluetooth/registry.test.ts) (BDD: @002-S7)
+- [ ] 002-T4 Driver registry: primary→secondary fallback, typed error union, query-param override (002-R4) (TDD: src/cube/input/bluetooth/registry.test.ts) (BDD: @002-S12)
+- [ ] 002-T5 `CubeStateTracker`: pure seed-then-apply state machine (002-R5) (TDD: src/cube/input/bluetooth/tracker.test.ts, src/cube/input/bluetooth/tracker.property.test.ts) (BDD: @002-S1, @002-S2)
+- [ ] 002-T6 Drift detection and recovery via facelet re-read (002-R6) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S4)
+- [ ] 002-T7 Out-of-order / duplicate move handling within the reorder window (002-R7) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S5, @002-S6)
+- [ ] 002-T8 Reconnect with backoff, state preserved across the gap (002-R8) (TDD: tests/integration/bluetooth-replay.test.ts) (BDD: @002-S7, @002-S8)
 - [ ] 002-T9 `/connect` UI (002-R9, 002-R10)
-  - [ ] 002-T9.1 Connect button, device name, battery, live-move indicator, `<CubeView>` mirror
-  - [ ] 002-T9.2 No-Web-Bluetooth message naming the cause, linking to the camera scanner
-  - [ ] 002-T9.3 Manual "my cube is solved" calibration path for facelet-less devices
-- [ ] 002-T10 `ReplayDriver` and the six fixture BLE traces (002-R11)
-- [ ] 002-T11 Move-to-render latency instrumentation and dev overlay (002-R12)
-- [ ] 002-T12 Resolve the `smartcube-web-bluetooth` install/pin decision (Open question R1) before relying on it
-- [ ] 002-T13 Write every test in the TDD plan and make it pass
-- [ ] 002-T14 Manual hardware sign-off with ≥ 2 vendors; record in Verification notes
+  - [ ] 002-T9.1 Connect button, device name, battery, live-move indicator, `<CubeView>` mirror (TDD: src/components/ConnectButton.test.tsx, src/app/connect/page.test.tsx) (BDD: @002-S1, @002-S11, @002-S13)
+  - [ ] 002-T9.2 No-Web-Bluetooth message naming the cause, linking to the camera scanner (TDD: src/app/connect/page.test.tsx) (BDD: @002-S10)
+  - [ ] 002-T9.3 Manual "my cube is solved" calibration path for facelet-less devices (TDD: src/app/connect/page.test.tsx) (BDD: @002-S9)
+- [ ] 002-T10 `ReplayDriver` and the six fixture BLE traces (002-R11) (TDD: src/cube/input/bluetooth/replay-driver.test.ts) (logical-eval: all six fixture traces replay to their recorded final facelet strings)
+- [ ] 002-T11 Move-to-render latency instrumentation and dev overlay (002-R12) (BDD: @002-S14) (TDD: tests/perf/002-bluetooth-latency.spec.ts)
+- [ ] 002-T12 Resolve the `smartcube-web-bluetooth` install/pin decision (Open question R1) before relying on it (reasoning: resolution recorded in Verification notes before any driver code depends on the package)
+- [ ] 002-T13 Write every test in the TDD plan and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [ ] 002-T14 Manual hardware sign-off with ≥ 2 vendors; record in Verification notes (reasoning: ≥ 2 real smart cubes connected, scrambled, and solved by a human tester, with timings and outcomes transcribed)
 
 ## BDD acceptance scenarios
 

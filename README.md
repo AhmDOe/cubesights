@@ -8,6 +8,13 @@ Old Pochmann corners, explicit setup moves and letter-pair targets).
 
 Project scaffolded by **Ernest Asare-Asiedu**.
 
+## License
+
+[PolyForm Noncommercial License 1.0.0](./LICENSE) © Ernest Asare-Asiedu. Personal and
+non-commercial use, copying, and modification are permitted. All commercial use and commercial
+modification rights are reserved and are **not** granted under this license — a separate
+commercial license from the copyright holder is required for any commercial purpose.
+
 ## Status
 
 Planning phase. No application code yet. See:

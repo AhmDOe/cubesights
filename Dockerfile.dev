@@ -1,0 +1,19 @@
+# Dev-only image (001-R14). Not a production build — bind-mounts source for hot reload via
+# `next dev`. The `test` service in docker-compose.yml reuses this same image to run Playwright.
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY prisma ./prisma
+RUN npm install
+RUN npx playwright install --with-deps chromium
+
+COPY . .
+
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

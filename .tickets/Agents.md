@@ -334,7 +334,7 @@ tedium of scanning, not to become a task-management system in their own right.
 
 | # | Ticket | Status | Depends on |
 | --- | --- | --- | --- |
-| 001 | [foundation-cube-core](./ticket-001-foundation-cube-core/prd.md) | planned | — |
+| 001 | [foundation-cube-core](./ticket-001-foundation-cube-core/prd.md) | review | — |
 | 002 | [smart-cube-bluetooth](./ticket-002-smart-cube-bluetooth/prd.md) | planned | 001 |
 | 003 | [camera-cube-scanner](./ticket-003-camera-cube-scanner/prd.md) | planned | 001 |
 | 004 | [solver-engine-method-pipeline](./ticket-004-solver-engine-method-pipeline/prd.md) | planned | 001 |

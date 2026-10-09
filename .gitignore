@@ -1,15 +1,50 @@
+# dependencies
 node_modules/
+/.pnp
+.pnp.js
+
+# testing
+coverage/
+playwright-report/
+test-results/
+
+# database
+/prisma/db.sqlite
+/prisma/db.sqlite-journal
+db.sqlite
+/generated/
+
+# next.js
 .next/
 out/
+next-env.d.ts
+
+# production
 dist/
-coverage/
+/build
+
+# env
 .env
 .env.local
 .env*.local
-*.log
-npm-debug.log*
+
+# misc
 .DS_Store
 Thumbs.db
+*.pem
 .turbo/
-playwright-report/
-test-results/
+*.tsbuildinfo
+.idea
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
+
+# local tooling state
+.claude/

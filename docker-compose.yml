@@ -1,0 +1,60 @@
+name: cubesights
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    environment:
+      # SQLite needs no network service, and Prisma/NextAuth are not load-bearing for the POC
+      # (root Agents.md §2) — AUTH_DISCORD_ID/SECRET are optional, no DB container is added here.
+      - WATCHPACK_POLLING=true # reliable file-change detection across the bind mount.
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - next_cache:/app/.next
+    # Default logging driver (json-file) + plain-text app output is what makes
+    # `docker compose logs app` directly readable (001-R14).
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    profiles: ["test"] # never starts on a bare `docker compose up`.
+    env_file:
+      - .env
+    environment:
+      - PLAYWRIGHT_BASE_URL=http://localhost:3000
+      - CI=true
+    # Shares app's network namespace instead of talking to it over the Compose bridge network by
+    # service-name DNS (see ticket 001 Verification notes: Chromium's browser-engine navigation
+    # fails with ERR_SSL_PROTOCOL_ERROR against *any* cross-container address in this environment
+    # — confirmed not scheme-upgrade, QUIC, IPv6, or sandboxing related; Playwright's own
+    # Node-based page.request and a plain Node http.get both succeed against the same address, so
+    # it is specific to Chromium's sandboxed network stack crossing the Docker bridge here).
+    # Navigating to "localhost" within a shared namespace is confirmed working, so that's the
+    # mechanism used instead of chasing the underlying Chromium/Docker-bridge incompatibility.
+    network_mode: "service:app"
+    depends_on:
+      app:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+    command: ["npm", "run", "test:e2e"]
+
+volumes:
+  node_modules:
+  next_cache:

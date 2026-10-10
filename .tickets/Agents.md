@@ -169,6 +169,40 @@ Rules:
   tag it anyway — the tag is a commitment, and TDD discipline means the test is written (and seen
   to fail) before the implementation that satisfies it.
 
+### 3.3 Dependency annotations and parallel work
+
+A task/subtask line may carry a `(depends: <id>[, <id>...])` annotation naming other task ids
+(within the same ticket or across tickets) that must reach `[x]` before this one can start. This
+is metadata for planning, not a new checkbox state — §3.1's three states and bottom-up update rule
+are unchanged.
+
+```markdown
+- [ ] 004-T6 MethodPlanner interface and registry (depends: 004-T1)
+- [ ] 004-T7 KociembaPlanner (depends: 004-T1, 004-T2)
+```
+
+Omit the annotation when a task has no dependency beyond the ones implied by its own nesting
+(a subtask implicitly depends on nothing from its parent unless stated — parents gate on children
+finishing, not the reverse).
+
+**Why this matters:** the dependency graph is what makes it safe to tell which tasks are genuinely
+independent and therefore eligible to run at the same time. Two tasks with no path between them in
+the graph (neither depends on the other, directly or transitively) *may* be worked in parallel —
+by two sub-agents, or by a human and an agent — but this is a tool for rare, genuinely-independent
+work, not a default mode:
+
+- **Cap at 2 concurrent tasks at any time**, project-wide. More than that multiplies merge/review
+  overhead faster than it saves wall-clock time on a codebase this size.
+- Prefer sequential work by default. Reach for parallel only when two independent tasks are each
+  substantial enough (roughly: each would take a sub-agent a full focused pass) that running them
+  concurrently is worth the coordination cost — not for two five-line tasks.
+- Before starting parallel work, confirm the two tasks don't touch the same files (check the TDD
+  plan's file list for each). Shared-file collisions (e.g. both touching `eslint.config.js` or
+  `package.json`) are the main real risk and should keep work sequential even if the dependency
+  graph says otherwise.
+- After parallel work lands, run the full suite once (not per-branch) before marking either task's
+  checkbox — a merge of two independently-green branches is not itself verified green.
+
 ## 4. Testing stack (standardised across all tickets)
 
 | Tool | Version intent | Used for |

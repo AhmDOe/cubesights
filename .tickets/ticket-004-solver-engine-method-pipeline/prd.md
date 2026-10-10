@@ -227,26 +227,26 @@ requirement disguised as an API detail.
 ## Tasks
 
 - [ ] 004-T1 `SolutionPlan`/`SolutionStage`/`SolutionMove`/`MemoBlock` result model (004-R1, 004-R2) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S8, @004-S17)
-- [ ] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3) (TDD: src/cube/solve/engines/min2phase.test.ts) (BDD: @004-S6)
-- [ ] 004-T3 `Min2PhaseEngine` + facelet-order assertion at init (004-R4) (TDD: src/cube/solve/engines/min2phase.test.ts) (BDD: @004-S1, @004-S2)
-- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5) (TDD: tests/integration/warmup.test.ts) (BDD: @004-S4)
-- [ ] 004-T5 `StepSolverEngine` over `cube-solver` for cross/XCross/FB/EOLine (004-R6) (TDD: src/cube/solve/engines/step-solver.test.ts) (BDD: @004-S15)
-- [ ] 004-T6 `MethodPlanner` interface and registry (004-R7) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
-- [ ] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8) (TDD: src/cube/solve/methods/kociemba.test.ts) (BDD: @004-S1, @004-S2, @004-S5)
-- [ ] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
+- [ ] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S6)
+- [ ] 004-T3 `SearchEngine` (`cubing/search`-backed, **not** the `min2phase` npm package — see 004-T16/Open questions) + facelet-order assertion at init (004-R4) (depends: 004-T2) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S1, @004-S2)
+- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5) (depends: 004-T3) (TDD: tests/integration/warmup.test.ts) (BDD: @004-S4)
+- [ ] 004-T5 `StepSolverEngine` for cross/XCross/FB/EOLine (004-R6) (depends: 004-T2) (TDD: src/cube/solve/engines/step-solver.test.ts) (BDD: @004-S15) — **blocked**, see 004-T16/Open question: `cube-solver`'s public API only accepts a scramble *string*, not an externally-observed state, which doesn't fit camera/BLE-scanned input; needs a different engine or a lower-level entry point before this can proceed
+- [ ] 004-T6 `MethodPlanner` interface and registry (004-R7) (depends: 004-T1) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
+- [ ] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8) (depends: 004-T1, 004-T3, 004-T6) (TDD: src/cube/solve/methods/kociemba.test.ts) (BDD: @004-S1, @004-S2, @004-S5)
+- [ ] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9) (depends: 004-T6) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
 - [ ] 004-T9 BLD data layer (004-R10)
   - [ ] 004-T9.1 `cubies.ts` — cubie/sticker model derived from the 001 facelet indices (TDD: src/cube/solve/bld/cubies.test.ts)
-  - [ ] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation (TDD: src/cube/solve/bld/scheme.test.ts) (BDD: @004-S14)
-  - [ ] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection (TDD: src/cube/solve/bld/cycles.test.ts, src/cube/solve/bld/cycles.property.test.ts) (BDD: @004-S11, @004-S12, @004-S13)
-  - [ ] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials (TDD: src/cube/solve/bld/setup.test.ts) (BDD: @004-S9, @004-S10)
-- [ ] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11) (logical-eval: every target letter in every scheme, for OP corners/edges and M2 edges, machine-verified against a real cube model — zero entries taken on trust)
-- [ ] 004-T11 Golden verification enforced in the planner base for every returned plan (004-R12) (logical-eval: applyMoves(plan.input, allMoves(plan)) equals solved, and every stage's stateBefore/stateAfter chain is internally consistent) (BDD: @004-S8)
-- [ ] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13) (reasoning: signature reviewed so OH re-ranking in ticket 010 requires no interface change)
-- [ ] 004-T13 Move post-processing: cancellation/merging, rotation elimination, AUF, per-metric counts (004-R14) (TDD: src/cube/solve/postprocess.test.ts) (BDD: @004-S16)
-- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15) (BDD: @004-S18)
-- [ ] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S17)
+  - [ ] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation (depends: 004-T9.1) (TDD: src/cube/solve/bld/scheme.test.ts) (BDD: @004-S14)
+  - [ ] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/cycles.test.ts, src/cube/solve/bld/cycles.property.test.ts) (BDD: @004-S11, @004-S12, @004-S13)
+  - [ ] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/setup.test.ts) (BDD: @004-S9, @004-S10)
+- [ ] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11) (depends: 004-T9.4) (logical-eval: every target letter in every scheme, for OP corners/edges and M2 edges, machine-verified against a real cube model — zero entries taken on trust)
+- [ ] 004-T11 Golden verification enforced in the planner base for every returned plan (004-R12) (depends: 004-T1, 004-T7) (logical-eval: applyMoves(plan.input, allMoves(plan)) equals solved, and every stage's stateBefore/stateAfter chain is internally consistent) (BDD: @004-S8)
+- [ ] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13) (depends: 004-T1) (reasoning: signature reviewed so OH re-ranking in ticket 010 requires no interface change)
+- [ ] 004-T13 Move post-processing: cancellation/merging, per-metric counts (004-R14) (TDD: src/cube/solve/postprocess.test.ts) (BDD: @004-S16) — rotation elimination and AUF insertion deferred, see Open questions (no current planner emits rotations or last-layer algs yet to exercise them against)
+- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15) (depends: 004-T1, 004-T7) (BDD: @004-S18)
+- [ ] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16) (depends: 004-T1) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S17)
 - [ ] 004-T16 Resolve open questions R1/R2 (engine package maturity, combined table-build cost) before relying on them (reasoning: resolution recorded in Verification notes before implementation depends on either assumption)
-- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass (depends: 004-T1 through 004-T15) (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
 
 ## BDD acceptance scenarios
 
@@ -434,14 +434,44 @@ flipped/twisted) taken from worked examples, so the property tests have a human-
 
 ## Open questions / risks
 
-- **R1 `min2phase` package maturity.** The repo is small (few commits) though it wraps
-  battle-tested code. Mitigation: the `SolverEngine` interface means swapping to `cubing/search`,
-  `twips`, or a Rust/WASM min2phase is a one-file change. Verify the published package resolves and
-  its worker path works under Next's bundler early; if not, `cubing/search` is the fallback.
-- **R2 Two Kociemba table builds.** `min2phase` and `cube-solver` each build their own tables
-  (~2 s each per `cube-solver`'s own README). If combined warmup is too heavy, use `cube-solver`
-  only for step solvers (which need lighter tables) and never invoke its full solve. Measure before
-  deciding.
+- **R1 (RESOLVED, rejected) `min2phase` package maturity.** Investigated by installing it and
+  reading the actual package, not just its listing: `min2phase@0.0.1`'s README is the unfilled
+  generic boilerplate for `cubing/lib-template.js` (literally titled "lib-template", never
+  customised) — not a maturity concern alone but a sign the package was never finished. Its only
+  exports (`initialize`, `solve(state: Transformation): Sequence`) depend on the standalone `alg`
+  and `kpuzzle` npm packages (not `cubing/alg`/`cubing/kpuzzle`, which is what we use everywhere
+  else), both published as `0.9.x` and marked "deprecated, no longer supported" on install. Worse:
+  it is licensed `GPL-3.0-or-later` with no dual-license option, which conflicts with this
+  project's PolyForm Noncommercial license. **Decision: do not use it.** Verified a working
+  alternative already in our dependency tree needs zero new installs: `cubing/search`'s
+  `experimentalSolve3x3x3IgnoringCenters(pattern: KPattern): Promise<Alg>` takes the exact
+  `KPattern` our own `toKPattern` adapter (001) already produces, and `cubing` is dual-licensed
+  `MPL-2.0 OR GPL-3.0-or-later` (we already depend on it project-wide, so no new licensing
+  exposure). End-to-end tested against `SUPERFLIP`: produced a 21-move solution in ~3 s cold, and
+  `applyMoves` confirmed it reaches `SOLVED_FACELETS` exactly. This is now `SearchEngine`
+  (004-T2/T3), not `Min2PhaseEngine`.
+- **R2 (RESOLVED, different problem than expected) Two Kociemba table builds.** The combined-cost
+  question is moot: `min2phase` is rejected outright (R1), and `cube-solver`'s *full* Kociemba
+  solve was never going to be wired in anyway because of a more fundamental mismatch — see the new
+  R8 below. `cubing/search`'s warm-up cost is whatever 004-T4's idle-warming measures; no second
+  engine's tables need building at all for the POC's `kociemba` method.
+- **R8 (NEW) `cube-solver`'s public API doesn't fit a scan-first architecture.** Installed and
+  tested directly (`require('cube-solver')` exposes exactly three functions: `scramble`, `solve`,
+  `initialize` — confirmed at runtime, nothing else). `solve(scramble: string, type: Solver):
+  string` takes a *scramble move-string* and solves "the state reached by applying it to a solved
+  cube" — it has no path for handing it a state we observed directly (camera scan, BLE read)
+  without already knowing a move sequence that produces that exact state, which is circular (that
+  *is* the solving problem). The 17.6 kB minified bundle contains no reference to facelets or any
+  state-shaped input at all, confirming this isn't a documentation gap. 004-T5 (`StepSolverEngine`
+  for cross/XCross/FB/EOLine, needed by future tickets 006-008) is therefore **blocked**, not
+  implemented. Options for whoever picks this up: (a) find a lower-level entry point into
+  `cube-solver`'s own search internals that accepts a state rather than a scramble string (would
+  need reading its TypeScript source, not just the published bundle); (b) use `cubing/search`'s
+  more general `solveTwips(kpuzzle, pattern, options)` with a custom goal pattern expressing the
+  sub-goal (cross solved, FB solved, etc.) instead of "fully solved" — promising since it already
+  accepts an arbitrary `KPattern`, but needs verifying twsearch's goal-pattern support actually
+  covers partial-cube goals; (c) a different step-solver library. Not resolved here — tracked so it
+  isn't silently assumed solved.
 - **R3 Hand-entered BLD tables are the main correctness risk.** 004-R11 is the mitigation and it is
   non-negotiable: every entry verified by applying it to a real cube model. Expect the first pass to
   find several wrong entries — that is the test working.
@@ -459,6 +489,16 @@ flipped/twisted) taken from worked examples, so the property tests have a human-
   full alg set (large data file, likely from a public set) and generating ZBLL solutions via the
   solver with a last-layer-only search. Not this ticket's decision, but the result model already
   supports either via `caseId` + `algName`.
+- **R9 (NEW) Rotation elimination and AUF insertion deferred.** 004-R14 calls for both as part of
+  move post-processing. Neither is implemented: rotation elimination requires a conjugation table
+  (rewriting `f` after a rotation `r` as `r·f·r⁻¹` before a rotation, then re-deriving it empirically
+  against `kpuzzle` the same way the 001 CORNERS/EDGES tables were — not something to hand-derive
+  under time pressure and risk silently breaking the golden invariant, since a rotation actually
+  does permute facelets and dropping one is not a no-op). AUF insertion only applies to last-layer
+  methods (CFOP/ZZ/ZB), none of which exist yet beyond stubs. `KociembaPlanner`'s own output never
+  contains rotations (confirmed empirically against `cubing/search`'s solutions), so neither gap
+  blocks this ticket's acceptance criteria — tracked for whichever of 006/008/009 first needs to
+  emit a rotation.
 
 ## Verification notes
 

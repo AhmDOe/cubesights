@@ -371,7 +371,7 @@ tedium of scanning, not to become a task-management system in their own right.
 | 001 | [foundation-cube-core](./ticket-001-foundation-cube-core/prd.md) | review | — |
 | 002 | [smart-cube-bluetooth](./ticket-002-smart-cube-bluetooth/prd.md) | in-progress | 001 |
 | 003 | [camera-cube-scanner](./ticket-003-camera-cube-scanner/prd.md) | review | 001 |
-| 004 | [solver-engine-method-pipeline](./ticket-004-solver-engine-method-pipeline/prd.md) | planned | 001 |
+| 004 | [solver-engine-method-pipeline](./ticket-004-solver-engine-method-pipeline/prd.md) | review | 001 |
 | 005 | [solution-playback-ui](./ticket-005-solution-playback-ui/prd.md) | planned | 001, 004 (soft: 002, 003) |
 
 Keep this table current. It is the fastest way for a new agent to see the state of the project. A

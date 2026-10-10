@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | planned |
+| Status | review |
 | Owner model | Opus (planning) → fast model (implementation) |
 | Depends on | 001 |
 | Blocks | 005, 006, 007, 008, 009, 010, 011, 012 |
@@ -226,27 +226,27 @@ requirement disguised as an API detail.
 
 ## Tasks
 
-- [ ] 004-T1 `SolutionPlan`/`SolutionStage`/`SolutionMove`/`MemoBlock` result model (004-R1, 004-R2) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S8, @004-S17)
-- [ ] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S6)
-- [ ] 004-T3 `SearchEngine` (`cubing/search`-backed, **not** the `min2phase` npm package — see 004-T16/Open questions) + facelet-order assertion at init (004-R4) (depends: 004-T2) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S1, @004-S2)
-- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5) (depends: 004-T3) (TDD: tests/integration/warmup.test.ts) (BDD: @004-S4)
-- [ ] 004-T5 `StepSolverEngine` for cross/XCross/FB/EOLine (004-R6) (depends: 004-T2) (TDD: src/cube/solve/engines/step-solver.test.ts) (BDD: @004-S15) — **blocked**, see 004-T16/Open question: `cube-solver`'s public API only accepts a scramble *string*, not an externally-observed state, which doesn't fit camera/BLE-scanned input; needs a different engine or a lower-level entry point before this can proceed
-- [ ] 004-T6 `MethodPlanner` interface and registry (004-R7) (depends: 004-T1) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
-- [ ] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8) (depends: 004-T1, 004-T3, 004-T6) (TDD: src/cube/solve/methods/kociemba.test.ts) (BDD: @004-S1, @004-S2, @004-S5)
-- [ ] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9) (depends: 004-T6) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
-- [ ] 004-T9 BLD data layer (004-R10)
-  - [ ] 004-T9.1 `cubies.ts` — cubie/sticker model derived from the 001 facelet indices (TDD: src/cube/solve/bld/cubies.test.ts)
-  - [ ] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation (depends: 004-T9.1) (TDD: src/cube/solve/bld/scheme.test.ts) (BDD: @004-S14)
-  - [ ] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/cycles.test.ts, src/cube/solve/bld/cycles.property.test.ts) (BDD: @004-S11, @004-S12, @004-S13)
-  - [ ] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/setup.test.ts) (BDD: @004-S9, @004-S10)
-- [ ] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11) (depends: 004-T9.4) (logical-eval: every target letter in every scheme, for OP corners/edges and M2 edges, machine-verified against a real cube model — zero entries taken on trust)
-- [ ] 004-T11 Golden verification enforced in the planner base for every returned plan (004-R12) (depends: 004-T1, 004-T7) (logical-eval: applyMoves(plan.input, allMoves(plan)) equals solved, and every stage's stateBefore/stateAfter chain is internally consistent) (BDD: @004-S8)
-- [ ] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13) (depends: 004-T1) (reasoning: signature reviewed so OH re-ranking in ticket 010 requires no interface change)
-- [ ] 004-T13 Move post-processing: cancellation/merging, per-metric counts (004-R14) (TDD: src/cube/solve/postprocess.test.ts) (BDD: @004-S16) — rotation elimination and AUF insertion deferred, see Open questions (no current planner emits rotations or last-layer algs yet to exercise them against)
-- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15) (depends: 004-T1, 004-T7) (BDD: @004-S18)
-- [ ] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16) (depends: 004-T1) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S17)
-- [ ] 004-T16 Resolve open questions R1/R2 (engine package maturity, combined table-build cost) before relying on them (reasoning: resolution recorded in Verification notes before implementation depends on either assumption)
-- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass (depends: 004-T1 through 004-T15) (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
+- [x] 004-T1 `SolutionPlan`/`SolutionStage`/`SolutionMove`/`MemoBlock` result model (004-R1, 004-R2) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S8, @004-S17)
+- [x] 004-T2 `SolverEngine` interface with `AbortSignal` cancellation (004-R3) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S6) — cancellation is consumer-side only, see Open question R13: the underlying `cubing/search` call has no abort primitive, so the caller's promise rejects but the search itself keeps running
+- [x] 004-T3 `SearchEngine` (`cubing/search`-backed, **not** the `min2phase` npm package — see Open question R1) + facelet-order assertion at init (004-R4) (depends: 004-T2) (TDD: src/cube/solve/engines/search-engine.test.ts) (BDD: @004-S1, @004-S2)
+- [ ] 004-T4 Idle-time table warming and `engineReady` flag (004-R5) (depends: 004-T3) (TDD: tests/integration/warmup.test.ts) (BDD: @004-S4) — not built; there's no page yet to warm it from (ticket 005's job), and `SearchEngine.init()`'s own cost is just the facelet-order assertion round-trip (cheap) rather than a real table build, so "warming" has less to do here than 004-R5 originally assumed
+- [ ] 004-T5 `StepSolverEngine` for cross/XCross/FB/EOLine (004-R6) (depends: 004-T2) (TDD: src/cube/solve/engines/step-solver.test.ts) (BDD: @004-S15) — **blocked**, see Open question R8: `cube-solver`'s public API only accepts a scramble *string*, not an externally-observed state, which doesn't fit camera/BLE-scanned input; needs a different engine or a lower-level entry point before this can proceed
+- [x] 004-T6 `MethodPlanner` interface and registry (004-R7) (depends: 004-T1) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
+- [x] 004-T7 `KociembaPlanner` — fully implemented, the POC's working method (004-R8) (depends: 004-T1, 004-T3, 004-T6) (TDD: src/cube/solve/methods/kociemba.test.ts) (BDD: @004-S1, @004-S2, @004-S5)
+- [x] 004-T8 Stub planners for cfop/roux/zz/zb/oh/bld with ticket-numbered `NotImplementedError` (004-R9) (depends: 004-T6) (TDD: src/cube/solve/methods/registry.test.ts) (BDD: @004-S7)
+- [x] 004-T9 BLD data layer (004-R10) (built by a parallel forked agent, reviewed and integrated — see Verification notes)
+  - [x] 004-T9.1 `cubies.ts` — cubie/sticker model derived from the 001 facelet indices (TDD: src/cube/solve/bld/cubies.test.ts)
+  - [x] 004-T9.2 `scheme.ts` — Speffz + custom letter schemes, bijection validation (depends: 004-T9.1) (TDD: src/cube/solve/bld/scheme.test.ts) (BDD: @004-S14) — see Open question R10 re: the Speffz lettering itself
+  - [x] 004-T9.3 `cycles.ts` — decomposition with cycle breaking, parity, solved/flipped/twisted detection (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/cycles.test.ts, src/cube/solve/bld/cycles.property.test.ts) (BDD: @004-S11, @004-S12, @004-S13)
+  - [x] 004-T9.4 `setup.ts` — OP corner tables, OP edge tables, M2 edge tables incl. M-slice specials (depends: 004-T9.1, 004-T9.2) (TDD: src/cube/solve/bld/setup.test.ts) (BDD: @004-S9, @004-S10) — M2's UF/DB targets are explicitly excluded, see Open question R11
+- [x] 004-T10 BLD table verification test: every entry performs exactly a buffer↔target 2-swap (004-R11) (depends: 004-T9.4) (logical-eval: every target letter in every scheme, for OP corners/edges and M2 edges, machine-verified against a real cube model — zero entries taken on trust)
+- [x] 004-T11 Golden verification for every returned plan (004-R12) (depends: 004-T1, 004-T7) (logical-eval: applyMoves(plan.input, allMoves(plan)) equals solved, and every stage's stateBefore/stateAfter chain is internally consistent) (BDD: @004-S8) — enforced inline in `KociembaPlanner.plan()` itself rather than via a shared planner-base wrapper (there's only one real planner so far); see Open question R12 for what a second real planner needs to remember
+- [x] 004-T12 `PlanOptions` incl. `oneHanded` passthrough for ticket 010 (004-R13) (depends: 004-T1) (reasoning: signature reviewed so OH re-ranking in ticket 010 requires no interface change)
+- [x] 004-T13 Move post-processing: cancellation/merging, per-metric counts (004-R14) (TDD: src/cube/solve/postprocess.test.ts) (BDD: @004-S16) — rotation elimination and AUF insertion deferred, see Open question R9 (no current planner emits rotations or last-layer algs yet to exercise them against)
+- [ ] 004-T14 Non-critical `solve.plan` tRPC router, client path never depends on it (004-R15) (depends: 004-T1, 004-T7) (BDD: @004-S18) — not built, deprioritised as explicitly non-critical per its own requirement text
+- [x] 004-T15 Serialisation: `SolutionPlan` JSON round-trip, `CubeState` URL-safe encoding (004-R16) (depends: 004-T1) (TDD: src/cube/model/solution.test.ts) (BDD: @004-S17)
+- [x] 004-T16 Resolve open questions R1/R2 (engine package maturity, combined table-build cost) before relying on them (reasoning: resolution recorded in Verification notes and Open questions — min2phase rejected, cubing/search adopted, cube-solver found unusable for scan-first input)
+- [ ] 004-T17 Write every test in the TDD plan (unit/property/integration/E2E/perf) and make it pass (depends: 004-T1 through 004-T15) (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids) — every unit/property test is written and passing (108 tests across `src/cube/model` + `src/cube/solve`); `tests/integration/solve-pipeline.test.ts`, `warmup.test.ts`, the E2E spec and the perf spec are not written, see Verification notes
 
 ## BDD acceptance scenarios
 
@@ -475,9 +475,8 @@ flipped/twisted) taken from worked examples, so the property tests have a human-
 - **R3 Hand-entered BLD tables are the main correctness risk.** 004-R11 is the mitigation and it is
   non-negotiable: every entry verified by applying it to a real cube model. Expect the first pass to
   find several wrong entries — that is the test working.
-- **R4 M2 special cases.** The M-slice targets (FU, BU, BD) and the DF/DB buffer-adjacent cases have
-  multiple accepted algorithm variants and are where published tables most often disagree. Encode
-  one variant per target, cite the source in a comment, and let 004-R11 adjudicate.
+- **R4 (ADDRESSED, see R11) M2 special cases.** This prediction was right, though the actual finding
+  was more fundamental than "variants disagree" — see R11 below.
 - **R5 Cycle-breaking conventions vary** between tutorials (where to break, whether to prefer
   un-shot pieces, how to order cycles). This affects memo length and comfort, not correctness.
   Implement one documented convention now, make it configurable, and defer "optimal break point"
@@ -499,7 +498,72 @@ flipped/twisted) taken from worked examples, so the property tests have a human-
   contains rotations (confirmed empirically against `cubing/search`'s solutions), so neither gap
   blocks this ticket's acceptance criteria — tracked for whichever of 006/008/009 first needs to
   emit a rotation.
+- **R10 (NEW) Speffz lettering is self-consistent, not verified against the published standard.**
+  `scheme.ts`'s `SPEFFZ_SCHEME` assigns letters A-X per face in a documented reading order, machine-
+  verified as a genuine bijection over all 48 stickers (@004-S14) — but no authoritative source for
+  the *exact* published Speffz letter-to-position mapping was confirmed during this session, so this
+  scheme's specific lettering may not match what a real BLD solver's memo expects. Nothing
+  downstream depends on matching the published lettering (only on being a consistent bijection), so
+  this doesn't block anything in this ticket, but ticket 011 (the real BLD planner) or any
+  user-facing memo display should cross-check against an authoritative Speffz reference before
+  shipping, or let users supply their own scheme via `createCustomScheme` regardless.
+- **R11 (NEW) M2's bare swap always also swaps UF<->DB; UF and DB are not in the M2 edge table.**
+  Found during table derivation (`tests/fixtures/bld/derive-setup-tables.mjs`) and confirmed against
+  the PRD's own worked M2 example (`U R U' M2 U R' U'` for target FR): turning the whole M-slice 180°
+  is not a clean single 2-swap — it's two simultaneous 2-swaps (buffer<->target, and UF<->DB as an
+  intrinsic side effect of the slice turn itself), confirmed for every table entry in
+  `setup.test.ts` by checking *every* cubie's final position and orientation, not just the two
+  "intended" ones. `UF`/`DB` themselves are each half of that companion pair and are excluded from
+  the table rather than force-fit into a plain-2-swap model that doesn't describe them. A real M2
+  BLD method needs an explicit rule for memoing UF/DB (commonly: treat the companion pair as always
+  resolved together, or special-case them) — not resolved here, flagged for ticket 011.
+- **R12 (NEW) Golden verification (004-R12/T11) is enforced inline in `KociembaPlanner`, not via a
+  shared planner-base wrapper.** With only one real planner this ticket, the outcome is identical —
+  no unverified plan can be returned — but the *mechanism* isn't automatically applied to a planner
+  that doesn't call it. Whoever implements the next real planner (ticket 006's CFOP) should either
+  remember to call `checkGoldenInvariant` themselves or, better, factor a small `verifyAndReturn`
+  helper (or a base class) that every planner routes its result through, so the enforcement is
+  structural rather than a convention to remember.
+- **R13 (NEW) `SolverEngine.solve()`'s `AbortSignal` cancellation is consumer-side only.**
+  Checked `cubing/search`'s full public API (`experimentalSolve3x3x3IgnoringCenters` and
+  `solveTwips`, the two solve-capable exports) for any cancellation primitive — neither accepts a
+  signal, callback, or returns a cancellable handle. `SearchEngine.solve()` can therefore make its
+  own returned promise reject immediately on abort (tested, @004-S6), but the underlying search
+  keeps computing in the background until it naturally finishes; "the worker is idle afterwards"
+  (part of @004-S6's original scenario text) is not literally true of the computation, only of what
+  the caller is left waiting on. Not a problem for the POC's typical single-digit-millisecond-to-
+  low-second solves, but worth knowing before assuming superseded searches are free.
 
 ## Verification notes
 
-_To be completed during review._
+Measured/verified on this development machine (Windows, Node v24).
+
+| Check | Result |
+| --- | --- |
+| `npx vitest run` (full suite) | 333 tests passing across 42 files; 108 of those are `src/cube/model` + `src/cube/solve` (this ticket) |
+| `npx tsc --noEmit` | clean |
+| `npx next lint` (whole project) | clean |
+| Engine choice (R1/R2/R8) | `min2phase` npm package rejected (unfilled template, deprecated deps, GPL-3.0-only); `cube-solver` rejected for `StepSolverEngine` (scramble-string-only API, no state input); `cubing/search`'s `experimentalSolve3x3x3IgnoringCenters` adopted, verified end-to-end against `SUPERFLIP` and several scrambles via our own `applyMoves` |
+| @004-S1 (scanned state -> verified plan, htm <= 22) | Passing for 5 scrambles + SUPERFLIP (`kociemba.test.ts`) |
+| @004-S2 (solved cube -> empty plan + note) | Passing |
+| @004-S5 (invalid state refused before search) | Passing, with a spy confirming `SearchEngine.prototype.solve` is never called |
+| @004-S6 (cancel + supersede) | Passing for what's achievable — see Open question R13 for the real limitation found |
+| @004-S7 (registry: all 7 ids, capability flags, NotImplementedError with ticket numbers) | Passing |
+| @004-S8 (stage consistency + golden invariant) | Passing, including a nested-substeps case |
+| @004-S9, @004-S10 (BLD table verification) | Passing — every OP corner/edge and M2 edge table entry checked against a real cube model, not trusted; the M2 UF/DB exclusion (R11) is itself asserted (those targets must NOT appear) |
+| @004-S11, @004-S12, @004-S13 (cycle decomposition, parity, flipped/twisted) | Passing (`cycles.test.ts`) plus a 900-run property test across 3 buffer configurations (`cycles.property.test.ts`) |
+| @004-S14 (letter scheme bijection) | Passing for Speffz and a custom scheme — see Open question R10 re: unverified published-Speffz accuracy |
+| @004-S16 (cancellation + metrics) | Passing, including the exact worked example from the ticket |
+| @004-S17 (plan JSON round-trip, state URL encoding) | Passing |
+| 004-R11 (BLD table verification mechanism) | Real wrong-entry-catching value confirmed: the M2 UF/DB finding (R11) was caught by exactly this mechanism — a naive plain-2-swap table would have silently shipped two broken targets |
+| Parallel-fork workflow (new process this session) | The BLD data layer (004-T9/T10, ~4 files + property tests) was built by a forked agent in an isolated git worktree while the engine/registry/model work continued in the main session — zero file overlap by design. Reviewed file-by-file before integration; found and fixed one real duplicate-type-definition issue (`Sticker`/`CubieId` independently declared in both `solution.ts` and the fork's `cubies.ts` — unified by having `cubies.ts` import and re-export `solution.ts`'s). No other changes needed; all 61 of the fork's tests passed unchanged once integrated. |
+| 004-T4 (idle warming, `engineReady`) | Not built — no page exists yet to warm from (ticket 005's job) |
+| 004-T5 (`StepSolverEngine`) | Blocked, not built — see Open question R8 |
+| 004-T14 (`solve.plan` tRPC router) | Not built — explicitly non-critical per its own requirement text, deprioritised |
+| Integration/E2E/perf suites (`solve-pipeline.test.ts`, `warmup.test.ts`, `004-solver.spec.ts`, `004-solver-latency.spec.ts`) | Not written this session |
+
+**Outstanding before this ticket can move to `done`:** the idle-warming integration (004-T4), the
+blocked step-solver engine (004-T5, needs a design decision per R8 before it can even start), the
+tRPC router (004-T14), the integration/E2E/perf suites, and the three BLD follow-ups tracked in
+R10-R12 (Speffz accuracy, M2 UF/DB memo handling, structural golden-verification enforcement for
+the next real planner). All are tracked explicitly above rather than silently assumed solved.

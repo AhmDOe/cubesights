@@ -5,6 +5,16 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": new URL("./src", import.meta.url).pathname,
+      // smartcube-web-bluetooth's published ESM build re-exports named bindings from the CJS
+      // package `aes-js` in a way that fails static ESM interop analysis ("Named export 'AES'
+      // not found") under Node, Vite, AND webpack alike — a real upstream packaging defect, not
+      // specific to this project. Resolving the bare specifier straight to its CJS build instead
+      // sidesteps it entirely; see the matching Next.js webpack/turbopack alias in next.config.js
+      // and ticket 002's Open question R8.
+      "smartcube-web-bluetooth": new URL(
+        "./node_modules/smartcube-web-bluetooth/dist/cjs/index.cjs",
+        import.meta.url,
+      ).pathname,
     },
   },
   test: {

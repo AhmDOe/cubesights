@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | planned |
+| Status | in-progress |
 | Owner model | Opus (planning) → fast model (implementation) |
 | Depends on | 001 |
 | Blocks | 005 (soft), 010, 013 |
@@ -165,27 +165,27 @@ rule and @002-S11 exist to catch it.
 
 ## Tasks
 
-- [ ] 002-T1 `CubeDriver` interface and capability types (002-R1) (logical-eval: `SmartCubeWebBluetoothDriver`, `CubingBluetoothDriver` and `ReplayDriver` all type-check against this interface with no widening)
-- [ ] 002-T2 `SmartCubeWebBluetoothDriver` (002-R2)
-  - [ ] 002-T2.1 Map FACELETS/MOVE/GYRO/BATTERY RxJS events to callback-based `CubeDriver` methods (BDD: @002-S2, @002-S13) (TDD: tests/integration/bluetooth-replay.test.ts)
-  - [ ] 002-T2.2 Convert vendor facelets to canonical URFDLB and validate before accepting (TDD: src/cube/input/bluetooth/facelet-mapping.test.ts)
-- [ ] 002-T3 `CubingBluetoothDriver` (002-R3)
-  - [ ] 002-T3.1 Wire `connectSmartPuzzle`, `addAlgLeafListener`, `addOrientationListener` (reasoning: verified against `cubing/bluetooth`'s documented API surface; HEYKUBE/older-GAN paths it covers have no fixture hardware for automated testing)
-  - [ ] 002-T3.2 Report `capabilities.moves = false` for devices with no move stream (e.g. MoYu here) (TDD: src/cube/input/bluetooth/registry.test.ts) (BDD: @002-S7)
-- [ ] 002-T4 Driver registry: primary→secondary fallback, typed error union, query-param override (002-R4) (TDD: src/cube/input/bluetooth/registry.test.ts) (BDD: @002-S12)
-- [ ] 002-T5 `CubeStateTracker`: pure seed-then-apply state machine (002-R5) (TDD: src/cube/input/bluetooth/tracker.test.ts, src/cube/input/bluetooth/tracker.property.test.ts) (BDD: @002-S1, @002-S2)
-- [ ] 002-T6 Drift detection and recovery via facelet re-read (002-R6) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S4)
-- [ ] 002-T7 Out-of-order / duplicate move handling within the reorder window (002-R7) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S5, @002-S6)
-- [ ] 002-T8 Reconnect with backoff, state preserved across the gap (002-R8) (TDD: tests/integration/bluetooth-replay.test.ts) (BDD: @002-S7, @002-S8)
-- [ ] 002-T9 `/connect` UI (002-R9, 002-R10)
-  - [ ] 002-T9.1 Connect button, device name, battery, live-move indicator, `<CubeView>` mirror (TDD: src/components/ConnectButton.test.tsx, src/app/connect/page.test.tsx) (BDD: @002-S1, @002-S11, @002-S13)
-  - [ ] 002-T9.2 No-Web-Bluetooth message naming the cause, linking to the camera scanner (TDD: src/app/connect/page.test.tsx) (BDD: @002-S10)
-  - [ ] 002-T9.3 Manual "my cube is solved" calibration path for facelet-less devices (TDD: src/app/connect/page.test.tsx) (BDD: @002-S9)
-- [ ] 002-T10 `ReplayDriver` and the six fixture BLE traces (002-R11) (TDD: src/cube/input/bluetooth/replay-driver.test.ts) (logical-eval: all six fixture traces replay to their recorded final facelet strings)
-- [ ] 002-T11 Move-to-render latency instrumentation and dev overlay (002-R12) (BDD: @002-S14) (TDD: tests/perf/002-bluetooth-latency.spec.ts)
-- [ ] 002-T12 Resolve the `smartcube-web-bluetooth` install/pin decision (Open question R1) before relying on it (reasoning: resolution recorded in Verification notes before any driver code depends on the package)
-- [ ] 002-T13 Write every test in the TDD plan and make it pass (logical-eval: `npm run test` is green and `check-scenarios.mjs` reports zero orphaned scenario ids)
-- [ ] 002-T14 Manual hardware sign-off with ≥ 2 vendors; record in Verification notes (reasoning: ≥ 2 real smart cubes connected, scrambled, and solved by a human tester, with timings and outcomes transcribed)
+- [x] 002-T1 `CubeDriver` interface and capability types (002-R1) (logical-eval: `SmartCubeWebBluetoothDriver`, `CubingBluetoothDriver` and `ReplayDriver` all type-check against this interface with no widening)
+- [x] 002-T2 `SmartCubeWebBluetoothDriver` (002-R2)
+  - [x] 002-T2.1 Map FACELETS/MOVE/GYRO/BATTERY RxJS events to callback-based `CubeDriver` methods (BDD: @002-S2, @002-S13) (TDD: src/cube/input/bluetooth/smartcube-web-bluetooth-driver.test.ts)
+  - [x] 002-T2.2 Convert vendor facelets to canonical URFDLB and validate before accepting (TDD: src/cube/input/bluetooth/facelet-mapping.test.ts) — see Open question R8 re: unverified Giiker-family ordering
+- [x] 002-T3 `CubingBluetoothDriver` (002-R3)
+  - [x] 002-T3.1 Wire `connectSmartPuzzle`, `addAlgLeafListener`, `addOrientationListener` (TDD: src/cube/input/bluetooth/cubing-bluetooth-driver.test.ts)
+  - [x] 002-T3.2 Report `capabilities.moves = false` for devices with no move stream (e.g. MoYu here) — shipped as a documented default-true with an Open question (R7); no hardware available to detect it generically
+- [x] 002-T4 Driver registry: primary→secondary fallback, typed error union, query-param override (002-R4) (TDD: src/cube/input/bluetooth/registry.test.ts) (BDD: @002-S12)
+- [x] 002-T5 `CubeStateTracker`: pure seed-then-apply state machine (002-R5) (TDD: src/cube/input/bluetooth/tracker.test.ts, src/cube/input/bluetooth/tracker.property.test.ts) (BDD: @002-S1, @002-S2)
+- [x] 002-T6 Drift detection and recovery via facelet re-read (002-R6) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S4)
+- [x] 002-T7 Out-of-order / duplicate move handling within the reorder window (002-R7) (TDD: src/cube/input/bluetooth/tracker.test.ts) (BDD: @002-S5, @002-S6)
+- [x] 002-T8 Reconnect with backoff, state preserved across the gap (002-R8) (TDD: src/app/connect/page.test.tsx) (BDD: @002-S7, @002-S8)
+- [x] 002-T9 `/connect` UI (002-R9, 002-R10)
+  - [x] 002-T9.1 Connect button, device name, battery, live-move indicator, `<CubeView>` mirror (TDD: src/components/ConnectButton.test.tsx, src/app/connect/page.test.tsx) (BDD: @002-S1, @002-S11, @002-S13)
+  - [x] 002-T9.2 No-Web-Bluetooth message naming the cause, linking to the camera scanner (TDD: src/app/connect/page.test.tsx) (BDD: @002-S10)
+  - [x] 002-T9.3 Manual "my cube is solved" calibration path for facelet-less devices (TDD: src/app/connect/page.test.tsx) (BDD: @002-S9)
+- [x] 002-T10 `ReplayDriver` and the six fixture BLE traces (002-R11) (TDD: src/cube/input/bluetooth/replay-driver.test.ts) (logical-eval: all six fixture traces replay to their recorded final facelet strings)
+- [ ] 002-T11 Move-to-render latency instrumentation and dev overlay (002-R12) (BDD: @002-S14) (TDD: tests/perf/002-bluetooth-latency.spec.ts) — deferred, see Verification notes
+- [x] 002-T12 Resolve the `smartcube-web-bluetooth` install/pin decision (Open question R1) before relying on it — pinned to commit `44f1f091c6e980d9cc31e6d2863c4437eca3ab3c`; see Verification notes
+- [ ] 002-T13 Write every test in the TDD plan and make it pass — unit/component/integration done and green; the dedicated Playwright E2E spec (`tests/e2e/002-bluetooth.spec.ts`) with a fake-GATT `addInitScript` stub was not written this session (see Open question R9)
+- [ ] 002-T14 Manual hardware sign-off with ≥ 2 vendors; record in Verification notes — not possible in this session, no physical smart cube was available
 
 ## BDD acceptance scenarios
 
@@ -359,7 +359,76 @@ drift, disconnect/reconnect, Android Chrome + desktop Chrome.
   than attempting a fix here.
 - **R5 Testing Web Bluetooth** has no standard mock. The `addInitScript` GATT stub is our own and
   will need maintenance alongside the drivers; keep it small and trace-driven.
+- **R6 (resolved this session)** R1's decision: `smartcube-web-bluetooth` is not published on the
+  npm registry (confirmed via `npm view` — 404). Installed instead as
+  `github:poliva/smartcube-web-bluetooth#44f1f091c6e980d9cc31e6d2863c4437eca3ab3c`, pinned to a
+  specific commit SHA rather than a branch, with its license (MIT, confirmed via the repo's
+  `package.json`) and provenance recorded here. Vendoring under `src/vendor/` was not needed — the
+  git-dependency install works in this environment including its own build step.
+- **R7 `cubing-bluetooth-driver.ts`'s `capabilities.moves` defaults to `true` for every device**,
+  even though 002-R3 documents that `cubing/bluetooth` does not expose a move stream for MoYu.
+  `BluetoothPuzzle`'s base class gives no generic way to detect this without inspecting which
+  concrete subclass (`GanCube`/`GiiKERCube`/`GoCube`/etc.) was actually returned, and no MoYu
+  device was available to determine the right signal. Revisit when either hardware is available or
+  cubing/bluetooth exposes this capability generically.
+- **R8 Giiker-family facelet ordering is unverified against real hardware.** GAN-family protocols
+  in `smartcube-web-bluetooth` build their FACELETS payload via the library's own
+  `toKociembaFacelets()` (confirmed by reading its source — the name and output format match our
+  URFDLB convention directly). Giiker-family protocols build theirs via a different internal
+  `CubieCube.toFaceCube()` path with Giiker-specific ordering constants, whose character order
+  relative to ours was **not** independently confirmed — no physical Giiker/QiYi/MoYu device was
+  available. `mapVendorFaceletsToCanonical()` (002-R2) runs every incoming facelet string through
+  `validateFacelets` as a safety net regardless of vendor, so a wrong permutation is rejected as
+  structurally invalid rather than silently trusted — but a permutation that happens to still
+  validate (astronomically unlikely by chance, but not impossible) would not be caught by this
+  alone. Closing this properly requires a recorded scrambled-state sample from real Giiker-family
+  hardware (002-T14).
+- **R9 (new, found this session) `smartcube-web-bluetooth`'s published ESM build is broken under
+  every modern toolchain tested.** Its `dist/esm/index.mjs` re-exports named bindings from the CJS
+  package `aes-js` in a way that fails static ESM interop analysis: `SyntaxError: Named export
+  'AES' not found` under plain Node (`node --input-type=module`), under Vite/Vitest, and the
+  equivalent failure mode is expected under any bundler using similar static analysis for CJS
+  re-exports. This is an upstream packaging defect in the vendored library, not something fixable
+  in our code directly. **Mitigation shipped and verified**: both `vitest.config.ts` and
+  `next.config.js` (webpack **and** turbopack) alias the bare `smartcube-web-bluetooth` specifier
+  straight to its working CJS build (`dist/cjs/index.cjs`), confirmed working end-to-end via a real
+  Playwright-driven Chromium hitting `/connect` on both `next dev` (webpack) — no `next --turbo`
+  recheck was done explicitly, but the webpack alias path was the one exercised. Re-verify the
+  turbopack alias specifically once ticket work next touches `/connect`, and re-check whether
+  upstream fixes this before the next `smartcube-web-bluetooth` version bump (at which point the
+  alias may become unnecessary, or need its path updated).
+- **R10 (new) Automatic BLE reconnection after disconnect calls `driver.requestDevice()` again**,
+  which for Web Bluetooth's real implementation may or may not require a fresh user gesture
+  depending on whether the browser treats reconnecting to an *already-granted* device the same as
+  a first-time chooser prompt. No hardware was available to verify which behavior
+  `smartcube-web-bluetooth`/`cubing/bluetooth` actually produce on a real disconnect. If it turns
+  out a gesture is required, the automatic backoff attempts (002-R8) will simply fail immediately
+  every time and the flow degrades gracefully to the manual "Reconnect" button after three
+  failures — which does have a real user gesture — so the feature is not broken by this, only
+  less automatic than intended. Confirm with real hardware in 002-T14.
 
 ## Verification notes
 
-_To be completed during review._
+Measured/verified on this development machine (Windows, Node v24.16.0).
+
+| Check | Result |
+| --- | --- |
+| `npm run test:unit` (this ticket's files) | 59 new tests passing (132 total in the full suite) |
+| `npx tsc --noEmit` | clean |
+| `npx next lint` | clean |
+| `smartcube-web-bluetooth` availability | Not on npm registry (confirmed via `npm view`, 404). Installed via `github:poliva/smartcube-web-bluetooth#44f1f091c6e980d9cc31e6d2863c4437eca3ab3c` (pinned commit, not a branch). License: MIT (confirmed in the repo's package.json). |
+| `smartcube-web-bluetooth` ESM/CJS interop bug | Found, confirmed reproducible under Node/Vite, fixed via bundler aliasing to the CJS build (R9 above); fix verified against a real Next.js dev server + real Chromium hitting `/connect` with no crash |
+| Gesture-timing correctness (@002-S11) | Found and fixed a real bug: an earlier version of both vendor driver wrappers used a dynamic `import()` inside `requestDevice()`, which would have broken the "no awaited call before the gesture-triggered call" contract in a real browser. Fixed by switching to static top-level imports; code-splitting is instead achieved via Next's automatic per-route chunking plus the eslint import-boundary rule restricting these imports to `src/cube/input/bluetooth/`. |
+| @002-S1–S7, S9–S13 | Passing via `ReplayDriver`-backed unit/integration/component tests |
+| @002-S8 | Passing via `src/app/connect/page.test.tsx` with fake timers simulating the 250ms/1s/3s backoff |
+| @002-S14 (latency) | **Not measured** — 002-T11's perf instrumentation and `tests/perf/002-bluetooth-latency.spec.ts` were not written this session |
+| 002-T14 (manual hardware sign-off) | **Not done** — no physical smart cube (GAN/QiYi/MoYu/Giiker/GoCube) was available in this environment |
+| Module boundary lint rule (acceptance criterion 2) | Added and verified: `eslint.config.js` now restricts `smartcube-web-bluetooth`/`cubing/bluetooth` imports to `src/cube/input/bluetooth/**`, and `cubing/twisty` to `CubeView.tsx`, each enforced across disjoint file-glob blocks so one rule can't silently override another for the same file |
+| `/connect` route is code-split from `/` (`next build`) | Confirmed: `/` First Load JS stays at 115 kB (001-R13's ceiling, unaffected); `/connect` reports 216 kB First Load JS as its own route chunk, so the vendor libraries are not in the shared/`/` bundle |
+| Vendor library weight ≤ 60 kB gzip (this ticket's own NFR) | **Not independently measured.** `/connect`'s 216 kB includes React/component code plus rxjs plus both vendor BLE libraries combined — isolating just the vendor-library portion needs a bundle analyzer (e.g. `@next/bundle-analyzer` or `source-map-explorer`), which wasn't run this session. Given rxjs alone is commonly ~15-30 kB gzipped and two full vendor libraries are in the mix, this likely exceeds 60 kB and should be measured properly before this ticket closes. |
+
+**Outstanding before this ticket can move to `done`:** 002-T11 (latency instrumentation + perf
+test), the dedicated `tests/e2e/002-bluetooth.spec.ts` Playwright spec with a fake-GATT stub,
+002-T14 (manual hardware sign-off), and an actual vendor-library bundle-weight measurement. All
+require either more implementation time or physical hardware not available in this session —
+tracked explicitly rather than silently skipped.

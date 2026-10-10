@@ -61,7 +61,7 @@ export const WRONG_COUNTS: FaceletString = (() => {
 
 /** Colour facelets (standard scheme) where the R and O centres are both reported as the same colour. */
 export const DUPLICATE_CENTRES_COLORS: ColorFacelets = (() => {
-  const colors: string[] = new Array(54).fill("W");
+  const colors: string[] = new Array<string>(54).fill("W");
   // Build a plausible standard-scheme colour layout, then corrupt two centres to collide.
   const faceColor: Record<string, string> = { U: "W", R: "R", F: "G", D: "Y", L: "O", B: "B" };
   const faces = ["U", "R", "F", "D", "L", "B"] as const;
